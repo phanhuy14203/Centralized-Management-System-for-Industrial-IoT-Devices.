@@ -1,3 +1,4 @@
+// import Chart from 'chart.js/auto'
 async function fetchCameraConfigurations() {
   try {
     const response = await fetch('/cameras'); // Gọi API /cameras
@@ -328,7 +329,7 @@ function viewReadValue(readValue) {
   // Hiển thị modal
   // modal.style.display = 'block';
   modal.style.display = 'flex';
-
+  modal.scrollIntoView({ behavior: 'smooth' });
   // Đóng modal khi nhấn ra ngoài
   modal.onclick = (event) => {
     if (event.target === modal) { // Kiểm tra nếu nhấn ra ngoài modal
@@ -336,22 +337,24 @@ function viewReadValue(readValue) {
     }
   };
 }
-// async function showKeyChart(idCam, key) {
-
+// async function showKeyChart(keyData, key) {
 //   try {
-//     const response = await fetch(`/key-data/${idCam}/${key}`); // Gọi API để lấy dữ liệu biểu đồ
-//     if (!response.ok) {
-//       throw new Error('Failed to fetch key data.');
-//     }
-//     const keyData = await response.json();
-
-//     // Đảm bảo chỉ lấy giá trị từ 10 ảnh mới nhất
-//     const labels = keyData.map(data => new Date(data.time).toLocaleString()).reverse(); // Trục thời gian
-//     const values = keyData.map(data => data.value).reverse(); // Trục giá trị
+//     // Chuyển đổi dữ liệu từ mảng 2 chiều thành các mảng labels và values
+//     const labels = keyData.map(data => new Date(data.time).toLocaleString('vi-VN', {
+//       year: 'numeric',
+//       month: '2-digit',
+//       day: '2-digit',
+//       hour: '2-digit',
+//       minute: '2-digit',
+//       second: '2-digit',
+//       hour12: false,
+//       timeZone: 'Asia/Ho_Chi_Minh'
+//     }));
+//     const values = keyData.map(data => data.value);
 
 //     const ctx = document.getElementById('keyChart').getContext('2d');
 //     new Chart(ctx, {
-//       type: 'bar',
+//       type: 'line', // Thay đổi loại biểu đồ thành 'line'
 //       data: {
 //         labels: labels,
 //         datasets: [{
@@ -359,7 +362,8 @@ function viewReadValue(readValue) {
 //           data: values,
 //           backgroundColor: 'rgba(54, 162, 235, 0.2)',
 //           borderColor: 'rgba(54, 162, 235, 1)',
-//           borderWidth: 1
+//           borderWidth: 1,
+//           fill: false // Không tô màu dưới đường
 //         }]
 //       },
 //       options: {
@@ -374,66 +378,18 @@ function viewReadValue(readValue) {
 //             title: {
 //               display: true,
 //               text: 'Giá trị'
-//             }
+//             },
+//             beginAtZero: true
 //           }
 //         }
 //       }
 //     });
 
-//     // Hiển thị modal biểu đồ
-//     const chartModal = document.getElementById('chartModal');
-//     chartModal.style.display = 'flex';
 //   } catch (error) {
-//     console.error('Error:', error);
+//     console.error('Error fetching key chart data:', error);
 //   }
 // }
-// Hàm để đóng modal
-// Hàm hiển thị dữ liệu Key
-// Hàm hiển thị biểu đồ Key
-function showKeyChart(keyData, key) {
-  const labels = keyData.map(data => new Date(data.time).toLocaleString());
-  const values = keyData.map(data => data.value);
-
-  const ctx = document.getElementById('keyChart').getContext('2d');
-  new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: `Key: ${key}`,
-        data: values,
-        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-        borderColor: 'rgba(54, 162, 235, 1)',
-        borderWidth: 1
-      }]
-    },
-    options: {
-      scales: {
-        x: {
-          title: {
-            display: true,
-            text: 'Thời gian'
-          }
-        },
-        y: {
-          title: {
-            display: true,
-            text: 'Giá trị'
-          }
-        }
-      }
-    }
-  });
-
-  // Hiển thị modal biểu đồ
-  const chartModal = document.getElementById('chartModal');
-  chartModal.style.display = 'flex';
-
-  // Đóng modal khi nhấn nút "Close"
-  document.getElementById('closeChartModal').onclick = () => {
-    chartModal.style.display = 'none';
-  };
-}
+let keyChart;
 async function showKeyData(key) {
   try {
     const response = await fetch(`/key-data/${idCamGlobal}/${key}`); // Gọi API để lấy dữ liệu key
@@ -467,13 +423,64 @@ async function showKeyData(key) {
     modal.style.display = 'flex';
 
     // Đóng modal khi nhấn ra ngoài
-    modal.onclick = (event) => {
-      if (event.target === modal) { // Kiểm tra nếu nhấn ra ngoài modal
-        closeValueModal('keyValueModal');
+    const labels = keyData.map(data => new Date(data.time).toLocaleString('vi-VN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+      timeZone: 'Asia/Ho_Chi_Minh'
+    }));
+    const values = keyData.map(data => data.value);
+    if (keyChart) {
+      keyChart.destroy();
+    }
+    const ctx = document.getElementById('keyChart').getContext('2d');
+    // ctx.innerHTML = '';
+    // xóa biểu đồ cũ
+    keyChart = new Chart(ctx, {
+      type: 'line', // Thay đổi loại biểu đồ thành 'line'
+      data: {
+        labels: labels,
+        datasets: [{
+          label: `Key: ${key}`,
+          data: values,
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1,
+          fill: false // Không tô màu dưới đường
+        }]
+      },
+      options: {
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Thời gian'
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Giá trị'
+            },
+            beginAtZero: true
+          }
+        }
       }
+    });
+    // cuộn đến vị trí bảng
+    modal.scrollIntoView({ behavior: 'smooth' });
+    // // Thêm sự kiện cho nút showChart
+        // Đóng modal khi nhấn ra ngoài
+    modal.onclick = (event) => {
+          if (event.target === modal) { // Kiểm tra nếu nhấn ra ngoài modal
+            closeValueModal('keyValueModal');
+          }
     };
-    // Thêm sự kiện cho nút showChart
-    document.getElementById('showChartBtn').onclick = () => showKeyChart(keyData, key);
+    // document.getElementById('showChartBtn').onclick = () => showKeyChart(keyData, key);
   } catch (error) {
     console.error('Error fetching key data:', error);
   }

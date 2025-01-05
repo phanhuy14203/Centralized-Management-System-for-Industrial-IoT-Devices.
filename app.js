@@ -15,7 +15,6 @@ const dbName = process.env.DB_NAME || "AIOT_CAMERA";
 const configCollection = process.env.CONFIG_COLLECTION || "CAMERA_CONFIGURATION";
 const processCollection = process.env.CONFIG_COLLECTION || "IMAGE_TEXT_DATA"; //IMAGE_PROCESSED
 const imageCollection = process.env.CONFIG_COLLECTION || "IMAGE";
-
 // Kết nối MongoDB một lần duy nhất
 let client;
 async function connectMongoDB() {
@@ -104,27 +103,6 @@ async function getImageByIdImage(idImage) {
     const collection = db.collection(imageCollection);
     return await collection.findOne({ _id: new ObjectId(idImage) });  // Truy vấn theo _id
 }
-// vẽ biểu đồ từ collection key
-// app.get('/key-data/:idCam/:key', async (req, res) => {
-//     try {
-//       const { idCam,key} = req.params;
-//       const keyData = await db.collection(processCollection)
-//         .find({ IdCam: idCam, Key: key })
-//         .sort({ ReadingTime: -1 }) // Sắp xếp theo thời gian giảm dần
-//         .limit(10) // Giới hạn kết quả trả về 10 ảnh mới nhất
-//         .toArray();
-//         const result = keyData.map(doc => {
-//             const readValue = doc.ReadValue.find(rv => rv.Key === key);
-//             return {
-//                 time: doc.ReadingTime,
-//                 value: readValue.Value
-//             };
-//             });
-//         res.json(result);   
-//     } catch (error) {
-//       res.status(500).send('Error fetching key data');
-//     }
-// });
 async function getKeyDataByIdCamAndKey(idCam, key) {
     const db = client.db(dbName);
     const keyData = await db.collection(processCollection)
@@ -133,7 +111,7 @@ async function getKeyDataByIdCamAndKey(idCam, key) {
             ReadValue: { $elemMatch: { Key: key } }
         })
         .sort({ ReadingTime: -1 }) // Sắp xếp theo thời gian giảm dần
-        .limit(30) // Giới hạn kết quả trả về 10 ảnh mới nhất
+        .limit(20) // Giới hạn kết quả trả về 10 ảnh mới nhất
         .toArray();
 
     // Chuyển đổi dữ liệu để chỉ trả về các giá trị cần thiết
@@ -195,5 +173,5 @@ app.get('/viewImage/:idImage', async (req, res) => {
 
 // Khởi động server
 app.listen(port, () => {
-    console.log(`Server đang chạy tại http://localhost:${port}`);
+    console.log(`Server đang chạy tại http://192.168.181.128:${port}`);
 });
