@@ -419,7 +419,7 @@ async function showKeyData(key) {
 
     // Hiển thị modal
     const modal = document.getElementById('keyValueModal');
-    modal.querySelector('h2').textContent = `Value ở KEY ${key}`;
+    modal.querySelector('h2').textContent = `KEY ${key}`;
     modal.style.display = 'flex';
 
     // Đóng modal khi nhấn ra ngoài
