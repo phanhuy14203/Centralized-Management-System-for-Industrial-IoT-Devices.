@@ -232,8 +232,23 @@ function updatePagination() {
 
   // Cập nhật trạng thái nút "Sau"
   document.getElementById('nextPage').disabled = currentPage === totalPages;
+  // Cập nhật số trang hiện tại và tổng số trang
+  document.getElementById('currentPageInput').value = currentPage;
+  document.getElementById('totalPagesSpan').textContent = `/ ${totalPages}`;
 }
+function handlePageInput(event) {
+  if (event.key === 'Enter') {
+    const inputPage = parseInt(event.target.value);
+    const totalPages = Math.ceil(imageProcessed.length / itemsPerPage);
 
+    if (!isNaN(inputPage) && inputPage >= 1 && inputPage <= totalPages) {
+      currentPage = inputPage;
+      displayPage(currentPage);
+    } else {
+      event.target.value = currentPage; // Reset lại giá trị nếu không hợp lệ
+    }
+  }
+}
 // function closeImageModal() {
 //   const modal = document.getElementById('imageProcessedModal');
 //   modal.style.display = 'none'; // Ẩn modal
@@ -337,58 +352,7 @@ function viewReadValue(readValue) {
     }
   };
 }
-// async function showKeyChart(keyData, key) {
-//   try {
-//     // Chuyển đổi dữ liệu từ mảng 2 chiều thành các mảng labels và values
-//     const labels = keyData.map(data => new Date(data.time).toLocaleString('vi-VN', {
-//       year: 'numeric',
-//       month: '2-digit',
-//       day: '2-digit',
-//       hour: '2-digit',
-//       minute: '2-digit',
-//       second: '2-digit',
-//       hour12: false,
-//       timeZone: 'Asia/Ho_Chi_Minh'
-//     }));
-//     const values = keyData.map(data => data.value);
 
-//     const ctx = document.getElementById('keyChart').getContext('2d');
-//     new Chart(ctx, {
-//       type: 'line', // Thay đổi loại biểu đồ thành 'line'
-//       data: {
-//         labels: labels,
-//         datasets: [{
-//           label: `Key: ${key}`,
-//           data: values,
-//           backgroundColor: 'rgba(54, 162, 235, 0.2)',
-//           borderColor: 'rgba(54, 162, 235, 1)',
-//           borderWidth: 1,
-//           fill: false // Không tô màu dưới đường
-//         }]
-//       },
-//       options: {
-//         scales: {
-//           x: {
-//             title: {
-//               display: true,
-//               text: 'Thời gian'
-//             }
-//           },
-//           y: {
-//             title: {
-//               display: true,
-//               text: 'Giá trị'
-//             },
-//             beginAtZero: true
-//           }
-//         }
-//       }
-//     });
-
-//   } catch (error) {
-//     console.error('Error fetching key chart data:', error);
-//   }
-// }
 let keyChart;
 async function showKeyData(key) {
   try {
