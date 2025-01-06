@@ -111,7 +111,7 @@ async function getKeyDataByIdCamAndKey(idCam, key) {
             ReadValue: { $elemMatch: { Key: key } }
         })
         .sort({ ReadingTime: -1 }) // Sắp xếp theo thời gian giảm dần
-        .limit(20) // Giới hạn kết quả trả về 10 ảnh mới nhất
+        .limit(60) // Giới hạn kết quả trả về 10 ảnh mới nhất
         .toArray();
 
     // Chuyển đổi dữ liệu để chỉ trả về các giá trị cần thiết
@@ -173,5 +173,5 @@ app.get('/viewImage/:idImage', async (req, res) => {
 
 // Khởi động server
 app.listen(port, () => {
-    console.log(`Server đang chạy tại http://192.168.181.128:${port}`);
+    console.log(`Server đang chạy tại http://localhost:${port}`);
 });
