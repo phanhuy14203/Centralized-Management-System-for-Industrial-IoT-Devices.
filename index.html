@@ -144,14 +144,23 @@
     }
 
     #pagination {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
     }
-
+    /* Thêm css cho số trang */
     #pagination button {
       padding: 6px 12px;
       font-size: 1rem;
+    }
+    #pagination input {
+    width: 50px;
+    text-align: center;
+    margin: 0 10px;
+    }
+    #pagination span {
+    margin-left: 5px;
     }
     #chartModal {
             display: none;
@@ -219,6 +228,8 @@
       </table>
       <div id="pagination">
         <button id="prevPage" onclick="changePage(-1)">Trước</button>
+        <input type="text" id="currentPageInput" value="1" onkeypress="handlePageInput(event)" />
+        <span id="totalPagesSpan">/ 1</span>
         <button id="nextPage" onclick="changePage(1)">Sau</button>
       </div>
     </div>
