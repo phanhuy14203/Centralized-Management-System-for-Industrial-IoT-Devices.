@@ -9,7 +9,7 @@ const app = express();
 const port = 3000;
 
 // Lấy các thông tin kết nối từ biến môi trường
-const uri = process.env.MONGO_URI || "mongodb://CvisionMongo:HEX4yoGMIVAPCh@45.251.112.69:4140/";
+const uri = process.env.MONGO_URI || "";
 
 const dbName = process.env.DB_NAME || "AIOT_CAMERA";
 const configCollection = process.env.CONFIG_COLLECTION || "CAMERA_CONFIGURATION";
